@@ -45,7 +45,7 @@ function PFContact({ tokens }) {
         {/* headline */}
         <h2 style={{
           fontFamily: f.display, fontWeight: 800,
-          fontSize: 'clamp(56px, 8vw, 120px)', lineHeight: 0.95,
+          fontSize: mob ? 28 : 'clamp(56px, 8vw, 120px)', lineHeight: mob ? 1.1 : 0.95,
           letterSpacing: '-0.05em', margin: 0, marginBottom: 24
         }}>
           {CONTACT.title}{' '}

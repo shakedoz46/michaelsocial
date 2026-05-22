@@ -23,7 +23,7 @@ function PFNYCStage({ active, setActive, fonts, c, orange, pink }) {
         position: 'relative',
         display: 'grid', gridTemplateColumns: 'auto auto auto',
         alignItems: 'center', gap: 16, perspective: 1400,
-        zoom: mob ? 0.68 : 1,
+        zoom: mob ? 0.58 : 1,
       }}>
         <div aria-hidden style={{
           position: 'absolute', inset: '20% 22% 20% 22%', borderRadius: '50%',

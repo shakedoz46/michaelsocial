@@ -54,17 +54,21 @@ function PFPosts({ tokens }) {
           </div>
 
           {/* filter chips */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{
+            display: 'flex', gap: mob ? 6 : 8,
+            flexWrap: mob ? 'nowrap' : 'wrap',
+            overflowX: mob ? 'auto' : 'visible',
+          }}>
             {categories.map((cat) => {
               const on = filter === cat;
               return (
                 <button key={cat} onClick={() => setFilter(cat)} style={{
-                  padding: '10px 18px', borderRadius: 999,
+                  padding: mob ? '7px 11px' : '10px 18px', borderRadius: 999,
                   border: `1.5px solid ${on ? orange : c.border}`,
                   background: on ? orange : 'transparent',
                   color: on ? '#fff' : c.text,
-                  fontFamily: f.body, fontSize: 13, fontWeight: 600,
-                  letterSpacing: '0.05em',
+                  fontFamily: f.body, fontSize: mob ? 11 : 13, fontWeight: 600,
+                  letterSpacing: '0.05em', flexShrink: 0,
                   cursor: 'pointer', transition: 'all .2s ease'
                 }}>{cat}</button>);
 
@@ -172,20 +176,29 @@ function PFPostsCarouselMobile({ filtered, fonts, c, orange }) {
   const onScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
-    const idx = Math.round(el.scrollLeft / el.offsetWidth);
-    setCurrentIdx(Math.max(0, Math.min(idx, filtered.length - 1)));
+    const containerCenter = el.getBoundingClientRect().left + el.offsetWidth / 2;
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    [...el.children].forEach((child, i) => {
+      const childCenter = child.getBoundingClientRect().left + child.offsetWidth / 2;
+      const dist = Math.abs(containerCenter - childCenter);
+      if (dist < closestDist) { closestDist = dist; closestIdx = i; }
+    });
+    setCurrentIdx(Math.max(0, Math.min(closestIdx, filtered.length - 1)));
   };
 
   const goTo = (idx) => {
     const el = scrollRef.current;
-    if (!el) return;
-    el.scrollTo({ left: idx * el.offsetWidth, behavior: 'smooth' });
+    if (!el || !el.children[idx]) return;
+    el.children[idx].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
     setCurrentIdx(idx);
   };
 
-  // Reset scroll position when filter changes
+  // Reset to first item when filter changes
   React.useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollLeft = 0;
     setCurrentIdx(0);
   }, [filtered]);
 
@@ -200,7 +213,7 @@ function PFPostsCarouselMobile({ filtered, fonts, c, orange }) {
           overflowX: 'auto',
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          direction: 'ltr',
+          direction: 'rtl',
           gap: 12,
           marginInline: -20,
           paddingInline: 20,

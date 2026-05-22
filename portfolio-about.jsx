@@ -40,7 +40,7 @@ function PFAbout({ tokens }) {
           <div>
             <h2 style={{
               fontFamily: f.display, fontWeight: 800,
-              fontSize: 'clamp(40px, 5.5vw, 72px)', lineHeight: 1.05,
+              fontSize: mob ? 28 : 'clamp(40px, 5.5vw, 72px)', lineHeight: 1.05,
               letterSpacing: '-0.035em', margin: 0, marginBottom: 40,
               opacity: seen ? 1 : 0, transform: seen ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity .9s .1s ease, transform 1s .1s cubic-bezier(.22,1,.36,1)'
@@ -120,6 +120,7 @@ function PFAboutPhoto({ fonts, orange, seen, c, mob }) {
 }
 
 function PFSkillTags({ fonts, orange, c, mob }) {
+  if (mob) return null;
   const positions = mob ? [
     { top: 14, insetInlineEnd: 14,    rotate: -6 },
     { top: '30%', insetInlineEnd: 14, rotate: 4  },

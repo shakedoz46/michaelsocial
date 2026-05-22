@@ -45,7 +45,11 @@ function PFNYC({ tokens }) {
           <PFNYCText fonts={f} c={c} orange={orange} seen={seen} />
 
           {/* LEFT — 3-phone carousel, no stories, no comments */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{
+            display: 'flex', justifyContent: 'center',
+            marginInline: mob ? -20 : 0,
+            overflow: mob ? 'hidden' : 'visible',
+          }}>
             <PFNYCStage
               active={active} setActive={setActive}
               fonts={f} c={c} orange={orange} pink={pink}
@@ -74,7 +78,7 @@ function PFNYCText({ fonts, c, orange, seen }) {
       {/* title — two lines: white + orange box */}
       <h2 style={{
         fontFamily: fonts.display, fontWeight: 800,
-        fontSize: 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.04,
+        fontSize: mob ? 28 : 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.04,
         letterSpacing: '-0.04em', margin: 0, marginBottom: 32,
         opacity: seen ? 1 : 0, transform: seen ? 'translateY(0)' : 'translateY(30px)',
         transition: 'opacity .9s .1s ease, transform 1s .1s cubic-bezier(.22,1,.36,1)'
@@ -93,7 +97,9 @@ function PFNYCText({ fonts, c, orange, seen }) {
         fontSize: 17, lineHeight: 1.8, margin: 0, marginBottom: 32,
         opacity: seen ? 0.92 : 0,
         transition: 'opacity .8s .25s ease',
-        whiteSpace: 'pre-line'
+        whiteSpace: mob ? 'normal' : 'pre-line',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word'
       }}>{NYC.paragraph}</p>
 
       {/* bullets */}
