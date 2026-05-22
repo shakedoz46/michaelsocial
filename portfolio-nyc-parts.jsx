@@ -16,45 +16,24 @@ function PFNYCStage({ active, setActive, fonts, c, orange, pink }) {
     setActive(idx);
   };
 
-  const navBtn = (label, onClick) => (
-    <button onClick={onClick} style={{
-      background: 'rgba(255,99,25,0.12)', border: '1px solid rgba(255,99,25,0.3)',
-      color: orange, borderRadius: '50%', width: 40, height: 40,
-      fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexShrink: 0,
-    }}>{label}</button>
-  );
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28 }}>
-      {mob ? (
-        /* Mobile: single center phone with prev/next arrow buttons */
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {navBtn('‹', () => goTo(prevIdx))}
-          <PFNYCMainPhone
-            key={'main-' + active}
-            video={current} dir={dir}
-            fonts={fonts} c={c} orange={orange} pink={pink}
-          />
-          {navBtn('›', () => goTo(nextIdx))}
-        </div>
-      ) : (
-        /* Desktop: 3-phone grid with peek phones */
-        <div style={{
-          position: 'relative',
-          display: 'grid', gridTemplateColumns: 'auto auto auto',
-          alignItems: 'center', gap: 16, perspective: 1400,
-        }}>
-          <div aria-hidden style={{
-            position: 'absolute', inset: '20% 22% 20% 22%', borderRadius: '50%',
-            background: `radial-gradient(circle, ${pink}28 0%, transparent 60%)`,
-            filter: 'blur(24px)', pointerEvents: 'none',
-          }} />
-          <PFNYCPeekPhone key={'peek-prev-' + prevIdx} video={NYC_VIDEOS_PF[prevIdx]} side="prev" onClick={() => goTo(prevIdx)} />
-          <PFNYCMainPhone key={'main-' + active} video={current} dir={dir} fonts={fonts} c={c} orange={orange} pink={pink} />
-          <PFNYCPeekPhone key={'peek-next-' + nextIdx} video={NYC_VIDEOS_PF[nextIdx]} side="next" onClick={() => goTo(nextIdx)} />
-        </div>
-      )}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: mob ? 12 : 28 }}>
+      {/* 3-phone grid — always shown, scaled down on mobile via zoom */}
+      <div style={{
+        position: 'relative',
+        display: 'grid', gridTemplateColumns: 'auto auto auto',
+        alignItems: 'center', gap: 16, perspective: 1400,
+        zoom: mob ? 0.68 : 1,
+      }}>
+        <div aria-hidden style={{
+          position: 'absolute', inset: '20% 22% 20% 22%', borderRadius: '50%',
+          background: `radial-gradient(circle, ${pink}28 0%, transparent 60%)`,
+          filter: 'blur(24px)', pointerEvents: 'none',
+        }} />
+        <PFNYCPeekPhone key={'peek-prev-' + prevIdx} video={NYC_VIDEOS_PF[prevIdx]} side="prev" onClick={() => goTo(prevIdx)} />
+        <PFNYCMainPhone key={'main-' + active} video={current} dir={dir} fonts={fonts} c={c} orange={orange} pink={pink} />
+        <PFNYCPeekPhone key={'peek-next-' + nextIdx} video={NYC_VIDEOS_PF[nextIdx]} side="next" onClick={() => goTo(nextIdx)} />
+      </div>
 
       <PFNYCIndicator active={active} total={total} setActive={goTo} fonts={fonts} c={c} orange={orange} />
 
@@ -357,59 +336,56 @@ function PFNYCQuote({ fonts, c, orange }) {
         position: 'absolute', top: -1, insetInlineStart: 40,
         width: 80, height: 4, background: orange, borderRadius: 2,
       }} />
-      {/* Instagram-style profile heading — RTL: image on right */}
+      {/* Instagram-style profile heading — avatar right, info left (RTL) */}
       <div style={{
-        display: 'grid', gridTemplateColumns: mob ? '1fr' : 'auto 1fr',
-        columnGap: 28, alignItems: 'center', marginBottom: mob ? 20 : 32,
-        direction: 'rtl', justifyItems: mob ? 'center' : 'start',
+        display: 'grid', gridTemplateColumns: 'auto 1fr',
+        columnGap: mob ? 16 : 28, alignItems: 'center',
+        marginBottom: mob ? 20 : 32, direction: 'rtl',
       }}>
         {/* avatar with IG gradient ring */}
         <div style={{
-          width: 96, height: 96, borderRadius: 48,
+          width: mob ? 72 : 96, height: mob ? 72 : 96,
+          borderRadius: '50%',
           background: 'linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
-          padding: 3, flexShrink: 0
+          padding: 3, flexShrink: 0,
         }}>
           <div style={{
             width: '100%', height: '100%', borderRadius: '50%',
-            overflow: 'hidden', background: c.bg,
-            border: `3px solid ${c.bg}`
+            overflow: 'hidden', background: c.bg, border: `3px solid ${c.bg}`,
           }}>
             <img src="assets/datinglist-profile.jpg" alt="datinglistnewyork"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
           </div>
         </div>
 
-        {/* profile info — RTL, right-aligned */}
+        {/* profile info — RTL */}
         <div style={{ direction: 'rtl', textAlign: 'right' }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            fontFamily: fonts.body, fontSize: 22, fontWeight: 700,
-            color: c.text, marginBottom: 4, justifyContent: 'flex-start'
+            display: 'flex', alignItems: 'center', gap: 6,
+            fontFamily: fonts.body, fontSize: mob ? 16 : 22, fontWeight: 700,
+            color: c.text, marginBottom: 4,
           }}>
             <span>datinglistnewyork</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#3897F0" aria-label="verified">
+            <svg width={mob ? 16 : 20} height={mob ? 16 : 20} viewBox="0 0 24 24" fill="#3897F0" aria-label="verified">
               <path d="M12 2 L14.5 4 L17.5 3.5 L18.5 6.5 L21 8 L20 11 L21 14 L18.5 15.5 L17.5 18.5 L14.5 18 L12 20 L9.5 18 L6.5 18.5 L5.5 15.5 L3 14 L4 11 L3 8 L5.5 6.5 L6.5 3.5 L9.5 4 Z" />
               <path d="M9 12 L11 14 L15 9" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
           <div style={{
-            fontFamily: fonts.body, fontSize: 15, fontWeight: 500,
-            color: c.text, opacity: 0.85, marginBottom: 14
+            fontFamily: fonts.body, fontSize: mob ? 13 : 15, fontWeight: 500,
+            color: c.text, opacity: 0.85, marginBottom: mob ? 10 : 14,
           }}>Date Ideas in NYC</div>
 
-          <div style={{
-            display: 'flex', gap: 28, justifyContent: 'flex-start',
-            fontFamily: fonts.body, color: c.text
-          }}>
+          <div style={{ display: 'flex', gap: mob ? 16 : 28, fontFamily: fonts.body, color: c.text }}>
             {[
               { val: '463',   label: 'פוסטים' },
               { val: '79.5K', label: 'עוקבים' },
               { val: '194',   label: 'נעקבים' },
             ].map(({ val, label }) => (
-              <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                <b style={{ fontWeight: 700, fontSize: 17 }}>{val}</b>
-                <span style={{ opacity: 0.65, fontSize: 13 }}>{label}</span>
+              <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                <b style={{ fontWeight: 700, fontSize: mob ? 14 : 17 }}>{val}</b>
+                <span style={{ opacity: 0.65, fontSize: mob ? 11 : 13 }}>{label}</span>
               </div>
             ))}
           </div>
@@ -419,8 +395,8 @@ function PFNYCQuote({ fonts, c, orange }) {
       {/* The quote */}
       <blockquote style={{
         fontFamily: fonts.display, fontWeight: 500,
-        fontSize: 'clamp(22px, 2.4vw, 36px)', lineHeight: 1.3,
-        letterSpacing: '-0.022em', margin: 0,
+        fontSize: mob ? 'clamp(16px, 4.5vw, 22px)' : 'clamp(22px, 2.4vw, 36px)',
+        lineHeight: 1.4, letterSpacing: '-0.022em', margin: 0,
         color: c.text,
       }}>
         <span style={{ color: orange, fontSize: '1.4em', lineHeight: 0, marginInlineEnd: 4 }}>"</span>

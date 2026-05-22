@@ -61,6 +61,7 @@ function PFNYC({ tokens }) {
 }
 
 function PFNYCText({ fonts, c, orange, seen }) {
+  const mob = useMobile();
   return (
     <div style={{ position: 'relative', paddingTop: 8 }}>
       {/* kicker */}
@@ -78,12 +79,11 @@ function PFNYCText({ fonts, c, orange, seen }) {
         opacity: seen ? 1 : 0, transform: seen ? 'translateY(0)' : 'translateY(30px)',
         transition: 'opacity .9s .1s ease, transform 1s .1s cubic-bezier(.22,1,.36,1)'
       }}>
-        <span style={{ display: 'block', whiteSpace: 'nowrap' }}>{NYC.title}</span>
+        <span style={{ display: 'block' }}>{NYC.title}</span>
         <PFHighlight orange={orange} pad="4px 22px" style={{
           marginTop: 12,
           transform: 'rotate(-1.5deg)',
           boxShadow: `0 8px 24px ${orange}55`,
-          whiteSpace: 'nowrap',
         }}>{NYC.titleAccent}</PFHighlight>
       </h2>
 

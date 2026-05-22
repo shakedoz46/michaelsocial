@@ -114,38 +114,24 @@ function PFAboutPhoto({ fonts, orange, seen, c, mob }) {
         </div>
       </div>
 
-      {/* Tags: floating on desktop, inline row on mobile */}
-      {mob ? (
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: 8,
-          marginTop: 20, justifyContent: 'center'
-        }}>
-          {ABOUT.tags.map(tag => (
-            <div key={tag} style={{
-              background: 'rgba(255,99,25,0.09)',
-              color: orange,
-              border: '1px solid rgba(255,99,25,0.28)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              padding: '8px 14px', borderRadius: 999,
-              fontFamily: fonts.body, fontSize: 13, fontWeight: 600,
-            }}>{tag}</div>
-          ))}
-        </div>
-      ) : (
-        <PFSkillTags fonts={fonts} orange={orange} c={c} />
-      )}
+      {/* Floating tags — around photo on all screen sizes */}
+      <PFSkillTags fonts={fonts} orange={orange} c={c} mob={mob} />
     </div>);
 }
 
-function PFSkillTags({ fonts, orange, c }) {
-  // Distributed around the photo: top, right (start in RTL), bottom, left (end in RTL).
-  const positions = [
-  { top: -22, insetInlineEnd: '14%', rotate: -6 }, // top-right
-  { top: '32%', insetInlineEnd: -42, rotate: 4 }, // mid-right (outer)
-  { bottom: -22, insetInlineEnd: '38%', rotate: -3 }, // bottom-center
-  { bottom: '18%', insetInlineStart: -36, rotate: 6 }, // bottom-left (outer)
-  { top: '8%', insetInlineStart: -40, rotate: -5 } // top-left (outer)
+function PFSkillTags({ fonts, orange, c, mob }) {
+  const positions = mob ? [
+    { top: 14, insetInlineEnd: 14,    rotate: -6 },
+    { top: '30%', insetInlineEnd: 14, rotate: 4  },
+    { bottom: 14, insetInlineEnd: '25%', rotate: -3 },
+    { bottom: '22%', insetInlineStart: 14, rotate: 6 },
+    { top: 14, insetInlineStart: 14,  rotate: -5 },
+  ] : [
+    { top: -22, insetInlineEnd: '14%',  rotate: -6 },
+    { top: '32%', insetInlineEnd: -42,  rotate: 4  },
+    { bottom: -22, insetInlineEnd: '38%', rotate: -3 },
+    { bottom: '18%', insetInlineStart: -36, rotate: 6 },
+    { top: '8%', insetInlineStart: -40, rotate: -5 },
   ];
   return (
     <>
