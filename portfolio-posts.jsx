@@ -1,4 +1,4 @@
-// All Posts — Instagram-style grid. Static thumbnails. Play on hover only.
+// All Posts — Instagram-style grid (desktop) / snap carousel (mobile).
 
 function PFPosts({ tokens }) {
   const { c, f, orange, pink } = tokens;
@@ -6,6 +6,7 @@ function PFPosts({ tokens }) {
   const seen = useInViewPF(ref, { threshold: 0.05 });
   const [filter, setFilter] = React.useState('ALL');
   const [hoverIdx, setHoverIdx] = React.useState(null);
+  const mob = useMobile();
 
   const categories = ['ALL', 'NYC', 'TRAVEL', 'EVENTS', 'FOOD'];
   const filtered = filter === 'ALL' ?
@@ -18,7 +19,7 @@ function PFPosts({ tokens }) {
       id="posts"
       style={{
         position: 'relative', background: c.bg, color: c.text,
-        paddingBlock: 140, paddingInline: 64, overflow: 'hidden'
+        paddingBlock: mob ? 80 : 140, paddingInline: mob ? 20 : 64, overflow: 'hidden'
       }}>
       
       <div aria-hidden style={{
@@ -71,23 +72,21 @@ function PFPosts({ tokens }) {
           </div>
         </div>
 
-        {/* grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 4
-        }}>
-          {filtered.map((p, i) =>
-          <PFPostTile
-            key={p.src + i}
-            post={p}
-            active={hoverIdx === i}
-            onEnter={() => setHoverIdx(i)}
-            onLeave={() => setHoverIdx((prev) => prev === i ? null : prev)}
-            fonts={f} c={c} orange={orange} />
-
-          )}
-        </div>
+        {/* grid (desktop) / carousel (mobile) */}
+        {mob ? (
+          <PFPostsCarouselMobile filtered={filtered} fonts={f} c={c} orange={orange} />
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
+            {filtered.map((p, i) =>
+              <PFPostTile
+                key={p.src + i} post={p}
+                active={hoverIdx === i}
+                onEnter={() => setHoverIdx(i)}
+                onLeave={() => setHoverIdx((prev) => prev === i ? null : prev)}
+                fonts={f} c={c} orange={orange} />
+            )}
+          </div>
+        )}
       </div>
     </section>);
 
@@ -166,4 +165,97 @@ function PFPostTile({ post, active, onEnter, onLeave, fonts, c, orange }) {
 
 }
 
-Object.assign(window, { PFPosts, PFPostTile });
+function PFPostsCarouselMobile({ filtered, fonts, c, orange }) {
+  const [currentIdx, setCurrentIdx] = React.useState(0);
+  const scrollRef = React.useRef(null);
+
+  const onScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.offsetWidth);
+    setCurrentIdx(Math.max(0, Math.min(idx, filtered.length - 1)));
+  };
+
+  const goTo = (idx) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: idx * el.offsetWidth, behavior: 'smooth' });
+    setCurrentIdx(idx);
+  };
+
+  // Reset scroll position when filter changes
+  React.useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+    setCurrentIdx(0);
+  }, [filtered]);
+
+  return (
+    <div>
+      <div
+        ref={scrollRef}
+        onScroll={onScroll}
+        className="pfNoScrollbar"
+        style={{
+          display: 'flex',
+          overflowX: 'auto',
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          direction: 'ltr',
+          gap: 12,
+          marginInline: -20,
+          paddingInline: 20,
+        }}
+      >
+        {filtered.map((p, i) => (
+          <div key={p.src + i} style={{ flex: '0 0 85%', scrollSnapAlign: 'center' }}>
+            <PFPostTileMobile post={p} fonts={fonts} c={c} orange={orange} isVisible={currentIdx === i} />
+          </div>
+        ))}
+      </div>
+
+      {/* dot indicator */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 20, direction: 'ltr' }}>
+        {filtered.map((_, i) => (
+          <button key={i} onClick={() => goTo(i)} style={{
+            width: i === currentIdx ? 24 : 8, height: 8, borderRadius: 4,
+            border: 'none', padding: 0, cursor: 'pointer',
+            background: i === currentIdx ? orange : 'rgba(255,255,255,0.2)',
+            transition: 'all .3s ease',
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PFPostTileMobile({ post, fonts, c, orange, isVisible }) {
+  const vref = React.useRef(null);
+  React.useEffect(() => {
+    const v = vref.current;
+    if (!v) return;
+    if (isVisible) v.play().catch(() => {});
+    else { v.pause(); v.currentTime = 0; }
+  }, [isVisible]);
+
+  return (
+    <div style={{
+      position: 'relative', aspectRatio: '4 / 5',
+      background: '#0a0a0a', overflow: 'hidden', borderRadius: 16,
+    }}>
+      <video ref={vref} src={post.src} muted loop playsInline preload="metadata"
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div style={{
+        position: 'absolute', inset: 0, padding: 16,
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        background: 'linear-gradient(transparent 40%, rgba(0,0,0,0.78))',
+        color: '#fff', fontFamily: fonts.body,
+      }}>
+        <div style={{ fontFamily: fonts.mono, fontSize: 10, letterSpacing: '0.25em', opacity: 0.85, marginBottom: 4 }}>{post.category}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{post.label}</div>
+        <div style={{ fontSize: 13, opacity: 0.85 }}>♥ {post.likes}</div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { PFPosts, PFPostTile, PFPostsCarouselMobile, PFPostTileMobile });

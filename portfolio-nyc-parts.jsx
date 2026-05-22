@@ -7,8 +7,8 @@ function PFNYCStage({ active, setActive, fonts, c, orange, pink }) {
   const current = NYC_VIDEOS_PF[active];
   const prevIdx = (active - 1 + total) % total;
   const nextIdx = (active + 1) % total;
+  const mob = useMobile();
 
-  // direction of last navigation, used for slide animation
   const [dir, setDir] = React.useState(0);
   const goTo = (idx) => {
     const diff = ((idx - active + total) % total);
@@ -16,51 +16,46 @@ function PFNYCStage({ active, setActive, fonts, c, orange, pink }) {
     setActive(idx);
   };
 
+  const navBtn = (label, onClick) => (
+    <button onClick={onClick} style={{
+      background: 'rgba(255,99,25,0.12)', border: '1px solid rgba(255,99,25,0.3)',
+      color: orange, borderRadius: '50%', width: 40, height: 40,
+      fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+    }}>{label}</button>
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28 }}>
-      {/* === 3-phone row === */}
-      <div style={{
-        position: 'relative',
-        display: 'grid', gridTemplateColumns: 'auto auto auto',
-        alignItems: 'center', gap: 16,
-        perspective: 1400,
-      }}>
-        {/* halo behind center */}
-        <div aria-hidden style={{
-          position: 'absolute', inset: '20% 22% 20% 22%', borderRadius: '50%',
-          background: `radial-gradient(circle, ${pink}28 0%, transparent 60%)`,
-          filter: 'blur(24px)', pointerEvents: 'none',
-        }} />
+      {mob ? (
+        /* Mobile: single center phone with prev/next arrow buttons */
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {navBtn('‹', () => goTo(prevIdx))}
+          <PFNYCMainPhone
+            key={'main-' + active}
+            video={current} dir={dir}
+            fonts={fonts} c={c} orange={orange} pink={pink}
+          />
+          {navBtn('›', () => goTo(nextIdx))}
+        </div>
+      ) : (
+        /* Desktop: 3-phone grid with peek phones */
+        <div style={{
+          position: 'relative',
+          display: 'grid', gridTemplateColumns: 'auto auto auto',
+          alignItems: 'center', gap: 16, perspective: 1400,
+        }}>
+          <div aria-hidden style={{
+            position: 'absolute', inset: '20% 22% 20% 22%', borderRadius: '50%',
+            background: `radial-gradient(circle, ${pink}28 0%, transparent 60%)`,
+            filter: 'blur(24px)', pointerEvents: 'none',
+          }} />
+          <PFNYCPeekPhone key={'peek-prev-' + prevIdx} video={NYC_VIDEOS_PF[prevIdx]} side="prev" onClick={() => goTo(prevIdx)} />
+          <PFNYCMainPhone key={'main-' + active} video={current} dir={dir} fonts={fonts} c={c} orange={orange} pink={pink} />
+          <PFNYCPeekPhone key={'peek-next-' + nextIdx} video={NYC_VIDEOS_PF[nextIdx]} side="next" onClick={() => goTo(nextIdx)} />
+        </div>
+      )}
 
-        {/* RIGHT (in RTL = previous = DOM first) — peek phone */}
-        <PFNYCPeekPhone
-          key={'peek-prev-' + prevIdx}
-          video={NYC_VIDEOS_PF[prevIdx]}
-          side="prev"
-          onClick={() => goTo(prevIdx)}
-        />
-
-        {/* CENTER — main reels phone */}
-        <PFNYCMainPhone
-          key={'main-' + active}
-          video={current}
-          dir={dir}
-          fonts={fonts}
-          c={c}
-          orange={orange}
-          pink={pink}
-        />
-
-        {/* LEFT (in RTL = next = DOM last) — peek phone */}
-        <PFNYCPeekPhone
-          key={'peek-next-' + nextIdx}
-          video={NYC_VIDEOS_PF[nextIdx]}
-          side="next"
-          onClick={() => goTo(nextIdx)}
-        />
-      </div>
-
-      {/* === Position indicator: videos remaining on each side === */}
       <PFNYCIndicator active={active} total={total} setActive={goTo} fonts={fonts} c={c} orange={orange} />
 
       <style>{`
@@ -345,14 +340,15 @@ function PFHeart({ filled, color = '#fff', size = 28, stroke }) {
 // Testimonial card with Instagram-style profile heading
 
 function PFNYCQuote({ fonts, c, orange }) {
+  const mob = useMobile();
   return (
     <div style={{
-      marginTop: 80,
+      marginTop: mob ? 48 : 80,
       maxWidth: 1200, marginInline: 'auto',
       background: c.soft,
       border: `1px solid ${c.border}`,
-      borderRadius: 24,
-      padding: '40px 48px',
+      borderRadius: mob ? 16 : 24,
+      padding: mob ? '24px 20px' : '40px 48px',
       boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
       position: 'relative',
     }}>
@@ -363,9 +359,9 @@ function PFNYCQuote({ fonts, c, orange }) {
       }} />
       {/* Instagram-style profile heading — RTL: image on right */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'auto 1fr',
-        columnGap: 28, alignItems: 'center', marginBottom: 32,
-        direction: 'rtl'
+        display: 'grid', gridTemplateColumns: mob ? '1fr' : 'auto 1fr',
+        columnGap: 28, alignItems: 'center', marginBottom: mob ? 20 : 32,
+        direction: 'rtl', justifyItems: mob ? 'center' : 'start',
       }}>
         {/* avatar with IG gradient ring */}
         <div style={{

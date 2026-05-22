@@ -147,6 +147,18 @@ function useCountUpPF(target, durationMs, run) {
   return val;
 }
 
+function useMobile() {
+  const [mob, setMob] = React.useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+  React.useEffect(() => {
+    const fn = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', fn, { passive: true });
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return mob;
+}
+
 function PFHighlight({ children, orange, pad, style }) {
   const [hovered, setHovered] = React.useState(false);
   const existingTransition = (style && style.transition) ? style.transition + ', ' : '';
@@ -176,5 +188,5 @@ function PFHighlight({ children, orange, pad, style }) {
 Object.assign(window, {
   HERO, ABOUT, NYC, NYC_VIDEOS_PF, ALL_POSTS, HE_COMMENTS_PF, CONTACT,
   THEMES, TYPE_PAIRS, DENSITY, useTokens, useInViewPF, useCountUpPF,
-  PFHighlight,
+  PFHighlight, useMobile,
 });

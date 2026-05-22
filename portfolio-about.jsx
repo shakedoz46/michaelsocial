@@ -4,6 +4,7 @@ function PFAbout({ tokens }) {
   const { c, f, orange } = tokens;
   const ref = React.useRef(null);
   const seen = useInViewPF(ref, { threshold: 0.1 });
+  const mob = useMobile();
 
   return (
     <section
@@ -11,7 +12,7 @@ function PFAbout({ tokens }) {
       id="about"
       style={{
         position: 'relative', background: c.bg, color: c.text,
-        paddingBlock: 140, paddingInline: 64, overflow: 'hidden'
+        paddingBlock: mob ? 80 : 140, paddingInline: mob ? 20 : 64, overflow: 'hidden'
       }}>
       
       {/* divider rule top */}
@@ -30,7 +31,9 @@ function PFAbout({ tokens }) {
 
         {/* grid: text RIGHT (RTL DOM first) | photo LEFT */}
         <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 480px', gap: 120,
+          display: 'grid',
+          gridTemplateColumns: mob ? '1fr' : '1fr 480px',
+          gap: mob ? 48 : 120,
           alignItems: 'center'
         }}>
           {/* TEXT */}
@@ -60,14 +63,14 @@ function PFAbout({ tokens }) {
           </div>
 
           {/* PHOTO + floating tags */}
-          <PFAboutPhoto fonts={f} orange={orange} seen={seen} c={c} />
+          <PFAboutPhoto fonts={f} orange={orange} seen={seen} c={c} mob={mob} />
         </div>
       </div>
     </section>);
 
 }
 
-function PFAboutPhoto({ fonts, orange, seen, c }) {
+function PFAboutPhoto({ fonts, orange, seen, c, mob }) {
   return (
     <div style={{
       position: 'relative',
@@ -78,14 +81,20 @@ function PFAboutPhoto({ fonts, orange, seen, c }) {
       {/* white symmetric frame — vintage portrait */}
       <div style={{
         background: '#FFFAF2',
-        padding: 24,
+        padding: mob ? 12 : 24,
         boxShadow: '0 30px 60px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.25)',
         position: 'relative',
-        width: 'fit-content', marginInline: 'auto', height: "524px"
+        width: mob ? '100%' : 'fit-content',
+        marginInline: 'auto',
+        height: mob ? 'auto' : '524px',
+        boxSizing: 'border-box',
       }}>
-        {/* inner photo with subtle vintage treatment */}
+        {/* inner photo */}
         <div style={{
-          width: 360, height: 440, overflow: 'hidden',
+          width: mob ? '100%' : 360,
+          height: mob ? 'auto' : 440,
+          aspectRatio: mob ? '4 / 5' : 'unset',
+          overflow: 'hidden',
           background: '#1a1a1a',
           position: 'relative'
         }}>
@@ -98,8 +107,6 @@ function PFAboutPhoto({ fonts, orange, seen, c }) {
               display: 'block',
               filter: 'contrast(1.05) saturate(0.85) sepia(0.06)'
             }} />
-          
-          {/* vintage vignette */}
           <div aria-hidden style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
             boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)'
@@ -107,10 +114,28 @@ function PFAboutPhoto({ fonts, orange, seen, c }) {
         </div>
       </div>
 
-      {/* Floating tags on ALL sides */}
-      <PFSkillTags fonts={fonts} orange={orange} c={c} />
+      {/* Tags: floating on desktop, inline row on mobile */}
+      {mob ? (
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: 8,
+          marginTop: 20, justifyContent: 'center'
+        }}>
+          {ABOUT.tags.map(tag => (
+            <div key={tag} style={{
+              background: 'rgba(255,99,25,0.09)',
+              color: orange,
+              border: '1px solid rgba(255,99,25,0.28)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              padding: '8px 14px', borderRadius: 999,
+              fontFamily: fonts.body, fontSize: 13, fontWeight: 600,
+            }}>{tag}</div>
+          ))}
+        </div>
+      ) : (
+        <PFSkillTags fonts={fonts} orange={orange} c={c} />
+      )}
     </div>);
-
 }
 
 function PFSkillTags({ fonts, orange, c }) {

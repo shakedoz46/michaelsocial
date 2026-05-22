@@ -4,6 +4,7 @@ function PFContact({ tokens }) {
   const { c, f, orange } = tokens;
   const ref = React.useRef(null);
   const seen = useInViewPF(ref, { threshold: 0.05 });
+  const mob = useMobile();
 
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -22,7 +23,7 @@ function PFContact({ tokens }) {
         position: 'relative',
         background: `linear-gradient(180deg, ${c.bg} 0%, ${c.soft} 100%)`,
         color: c.text,
-        paddingBlock: 140, paddingInline: 64, overflow: 'hidden'
+        paddingBlock: mob ? 80 : 140, paddingInline: mob ? 20 : 64, overflow: 'hidden'
       }}
     >
       <div aria-hidden style={{
@@ -67,16 +68,16 @@ function PFContact({ tokens }) {
           <form onSubmit={submit}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 28, marginBottom: 32
+              gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)',
+              gap: mob ? 20 : 28, marginBottom: 32
             }}>
               {/* col 1: name + phone */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: mob ? 20 : 24 }}>
                 <PFInput field={CONTACT.fields[0]} fonts={f} c={c} orange={orange} />
                 <PFInput field={CONTACT.fields[1]} fonts={f} c={c} orange={orange} />
               </div>
               {/* col 2: business + email */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: mob ? 20 : 24 }}>
                 <PFInput field={CONTACT.fields[2]} fonts={f} c={c} orange={orange} />
                 <PFInput field={CONTACT.fields[3]} fonts={f} c={c} orange={orange} />
               </div>

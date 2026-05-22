@@ -4,6 +4,7 @@ function PFHero({ tokens }) {
   const { c, f, orange } = tokens;
   const ref = React.useRef(null);
   const seen = useInViewPF(ref);
+  const mob = useMobile();
 
   return (
     <section
@@ -12,7 +13,7 @@ function PFHero({ tokens }) {
       style={{
         position: 'relative', minHeight: '100vh',
         background: c.bg, color: c.text,
-        padding: '120px 64px 80px',
+        padding: mob ? '100px 20px 60px' : '120px 64px 80px',
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column', justifyContent: 'center'
       }}>

@@ -8,6 +8,7 @@ function PFNYC({ tokens }) {
   const ref = React.useRef(null);
   const seen = useInViewPF(ref, { threshold: 0.05 });
   const [active, setActive] = React.useState(2);
+  const mob = useMobile();
   const current = NYC_VIDEOS_PF[active];
 
   return (
@@ -16,7 +17,7 @@ function PFNYC({ tokens }) {
       id="nyc"
       style={{
         position: 'relative', background: c.bg, color: c.text,
-        paddingBlock: 140, paddingInline: 64, overflow: 'hidden'
+        paddingBlock: mob ? 80 : 140, paddingInline: mob ? 20 : 64, overflow: 'hidden'
       }}
     >
       {/* glow */}
@@ -35,8 +36,10 @@ function PFNYC({ tokens }) {
       <div style={{ maxWidth: 1320, marginInline: 'auto', position: 'relative' }}>
         {/* Grid: text RIGHT (DOM order #1) | stories+phone LEFT (DOM order #2) */}
         <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          gap: 40, alignItems: 'center'
+          display: 'grid',
+          gridTemplateColumns: mob ? '1fr' : '1fr 1fr',
+          gap: mob ? 48 : 40,
+          alignItems: 'center'
         }}>
           {/* RIGHT — title + paragraph + bullets directly stacked */}
           <PFNYCText fonts={f} c={c} orange={orange} seen={seen} />

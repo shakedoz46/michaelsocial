@@ -19,6 +19,9 @@
   ::-webkit-scrollbar-track { background: #0A0A0A; }
   ::-webkit-scrollbar-thumb { background: #FF6319; border-radius: 3px; }
 
+  .pfNoScrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .pfNoScrollbar::-webkit-scrollbar { display: none; }
+
   /* film grain */
   .grain-overlay {
     position: fixed; inset: 0; pointer-events: none; z-index: 99; opacity: 0.025;
