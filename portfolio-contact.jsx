@@ -1,5 +1,8 @@
 // Contact — big accessible inputs, solid orange CTA with white bold text.
 
+// ← אחרי deploy של הדשבורד, שנה ל-URL האמיתי שלו (למשל: https://admin.michaelsocial.vercel.app)
+const DASHBOARD_URL = 'https://admin-dashboard-shakedoz46s-projects.vercel.app';
+
 function PFContact({ tokens }) {
   const { c, f, orange } = tokens;
   const ref = React.useRef(null);
@@ -9,10 +12,28 @@ function PFContact({ tokens }) {
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSubmitted(true); }, 900);
+    const fd = new FormData(e.target);
+    const body = {
+      name:     fd.get('name') || '',
+      phone:    fd.get('phone') || '',
+      business: fd.get('business') || '',
+      email:    fd.get('email') || '',
+      message:  fd.get('message') || '',
+    };
+    if (DASHBOARD_URL) {
+      try {
+        await fetch(`${DASHBOARD_URL}/api/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+      } catch (_) { /* שגיאת רשת — עדיין מציגים אישור */ }
+    }
+    setLoading(false);
+    setSubmitted(true);
   };
 
   return (
@@ -89,6 +110,7 @@ function PFContact({ tokens }) {
                 }}>ספרו לי על העסק שלכם</label>
                 <textarea
                   required
+                  name="message"
                   dir="rtl"
                   placeholder="מה אתם מחפשים? מה הסיפור שלכם?"
                   style={{
@@ -150,6 +172,7 @@ function PFInput({ field, fonts, c, orange }) {
       }}>{field.label}</label>
       <input
         type={field.type}
+        name={field.id}
         placeholder={field.placeholder}
         required
         dir="rtl"
